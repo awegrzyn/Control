@@ -1,0 +1,27 @@
+language: bash
+branches:
+  only:
+    - master
+script:
+  echo "Nothing to do"
+after_success: |
+  set -e
+  curl -L https://github.com/github/hub/releases/download/v2.6.0/hub-linux-amd64-2.6.0.tgz | tar xz
+  MESSAGE="Sync proto file with Control repo"
+  ORG=${TRAVIS_REPO_SLUG%%/*}
+  REPO=WebUI
+  if git diff --name-only $TRAVIS_COMMIT_RANGE | grep -e "\(o2control.proto\)" ; then
+    git clone git://github.com/$ORG/$REPO
+    cp core/protos/o2control.proto $REPO/Control/protobuf
+    pushd $REPO
+      git config user.email ${CERN_EMAIL}
+      git config user.name ${GH_USERNAME}
+      if git add Control/protobuf/o2control.proto && git commit -m "${MESSAGE}"; then
+        git push "https://${GH_SECURE_TOKEN}@github.com/$ORG/$REPO" HEAD:refs/heads/proto-file-sync -f > /dev/null 2>&1
+        GITHUB_TOKEN=${GH_SECURE_TOKEN} ../hub-linux-amd64-2.6.0/bin/hub pull-request -h proto-file-sync -b dev -m "Control proto file sync of $(date +%Y-%m-%d)" || true
+      fi
+    popd
+  fi
+branches:
+  only:
+  - master
