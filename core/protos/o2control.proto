@@ -22,6 +22,8 @@
  * Intergovernmental Organization or submit itself to any jurisdiction.
  */
 
+// A small changes
+
 syntax = "proto3";
 
 package o2control;
