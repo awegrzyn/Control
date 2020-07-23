@@ -24,7 +24,7 @@
 
 
 #include "ControlledStateMachine.h"
-
+#include <Configuration/ConfigurationFactory.h>
 #include <boost/property_tree/json_parser.hpp>
 
 #include <iostream>
@@ -42,12 +42,18 @@ struct RaiiLogEntry
 int ControlledStateMachine::executeConfigure(const boost::property_tree::ptree& properties)
 {
     LOG_SCOPE
-    printf("received runtime configuration:\n");
+    boost::property_tree::ptree props;
+    if (configPath.empty()) {
+      props = properties;
+    } else {
+      auto conf = o2::configuration::ConfigurationFactory::getConfiguration("json:///tmp/config.json");
+      props = conf->getRecursive("");
+    }
+    printf("runtime configuration:\n");
     std::stringstream ss;
-    boost::property_tree::json_parser::write_json(ss, properties);
+    boost::property_tree::json_parser::write_json(ss, props);
     printf("%s\n", ss.str().c_str());
-
-    return RuntimeControlledObject::executeConfigure(properties);
+    return RuntimeControlledObject::executeConfigure(props);
 }
 
 int ControlledStateMachine::executeReset()

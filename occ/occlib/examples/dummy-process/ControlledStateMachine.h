@@ -31,7 +31,7 @@
 class ControlledStateMachine : public RuntimeControlledObject
 {
 public:
-    explicit ControlledStateMachine() : RuntimeControlledObject("Dummy Process") {}
+    explicit ControlledStateMachine(const std::string& config) : RuntimeControlledObject("Dummy Process"), configPath(config) {}
 
     int executeConfigure(const boost::property_tree::ptree& properties) override; // to go from standby to configured
     int executeReset() override;   // to go from configured to standby
@@ -45,6 +45,8 @@ public:
     // ↓ called by event loop in OccServer
     int iterateRunning() override;     // called continuously in state 'running'
     int iterateCheck() override;       // called periodically in any state
+private:
+    std::string configPath;
 };
 
 

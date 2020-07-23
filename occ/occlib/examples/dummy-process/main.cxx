@@ -37,13 +37,15 @@ int main(int argc, char* argv[]) {
     // finally, the ones from OccInstance must be appended in order to handle --control-port:
     desc.add(OccInstance::ProgramOptions());
 
+    desc.add_options()("config", po::value<std::string>()->default_value(""), "Config file URL");
+
     // Boost::program_options boilerplate...
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
     po::notify(vm);
 
     // Instantiate your state machine which inherits from RuntimeControlledObject:
-    ControlledStateMachine csm;
+    ControlledStateMachine csm(vm["config"].as<std::string>());
     // Nothing is happening yet, the state machine starts in t_State::undefined.
 
     // Instantiate the O² Control and Configuration interface:
