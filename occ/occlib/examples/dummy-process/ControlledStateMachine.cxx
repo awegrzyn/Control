@@ -46,7 +46,7 @@ int ControlledStateMachine::executeConfigure(const boost::property_tree::ptree& 
     if (configPath.empty()) {
       props = properties;
     } else {
-      auto conf = o2::configuration::ConfigurationFactory::getConfiguration("json:///tmp/config.json");
+      auto conf = o2::configuration::ConfigurationFactory::getConfiguration(configPath);
       props = conf->getRecursive("");
     }
     printf("runtime configuration:\n");
